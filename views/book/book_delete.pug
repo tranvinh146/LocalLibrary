@@ -1,0 +1,41 @@
+extends ../layout 
+
+block content 
+  h1 #{title}: #{book.title} 
+  p= book.summary 
+
+  if book_bookinstances.length 
+    p #[strong Delete the following copyies of this book before attempting to delete.]
+
+    .ms-3.mt-3 
+      h4 Copies   
+
+      each bookinstance in book_bookinstances 
+        hr
+        if bookinstance.status=='Available'
+          p.text-success #{bookinstance.status} 
+        else if bookinstance.status=='Maintenance' 
+          p.text-danger #{bookinstance.status} 
+        else 
+          p.text-warning #{bookinstance.status} 
+        p #[strong Imprint:] #{bookinstance.imprint}
+        if bookinstance.status!='Available' 
+          p #[strong Due back:] #{bookinstance.due_back_formatted}
+        p #[strong Id:]
+          a(href=bookinstance.url)  #{bookinstance._id}
+
+  else 
+    p Do you really want to delete this Author?
+
+    .mb-3.d-flex
+      form(method='POST')
+        input#authorid.form-control(
+          type='hidden'
+          name='bookid'
+          required=true 
+          value=book._id
+        )
+
+        button.btn.btn-primary(type='submit') Delete
+
+      a(href=book.url).ms-3.btn.btn-danger Cancel

@@ -1,0 +1,66 @@
+extends ../layout 
+
+block content 
+  h1= title 
+
+  form(method='POST')
+    .mb-3 
+      label.form-label(for='title') Title: 
+      input#title.form-control(
+        type='text'
+        placeholder='Name of Book'
+        name='title'
+        value=(undefined==book ? '' : book.title)
+      )
+    .mb-3 
+      label.form-label(for='author') Author: 
+      select#author.form-control(
+        type='text'
+        placeholder='Select author'
+        name='author'
+      )
+        - authors.sort((a, b) => {let textA = a.family_name.toLowerCase(); let textB = b.family_name.toLowerCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;})
+        for author in authors
+          if book
+              //- Handle GET form, where book.author is an object, and POST form, where it is a string.
+              option(
+                value=author._id 
+                selected=(
+                  author._id.toString()===book.author._id.toString()
+                ) ? 'selected' : false
+              ) #{author.name}
+          else
+            option(value=author._id) #{author.name}
+    .mb-3 
+      label(for='summary') Summary:
+      textarea#summary.form-control(
+        placeholder='Summary'
+        name='summary'
+      ) #{undefined===book ? '' : book.summary}
+    .mb-3 
+      label(for='isbn') ISBN: 
+      input#isbn.form-control(
+        type='text'
+        placeholder='ISBN13'
+        name='isbn'
+        value=(undefined==book ? '' : book.isbn)
+      )
+    .mb-3
+      label Genre: 
+      div
+        for genre in genres 
+          div.d-inline.pe-3
+            input.checkbox-input(
+              type='checkbox'
+              name='genre'
+              id=genre._id
+              value=genre._id
+              checked=genre.checked
+            )
+            label(for=genre._id) #{genre.name}
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors 
+    ul 
+      for error in errors 
+        li!= error.msg

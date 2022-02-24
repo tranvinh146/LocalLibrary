@@ -1,0 +1,63 @@
+extends ../layout 
+
+block content 
+  h1= title 
+
+  form(method='POST')
+    .mb-3 
+      label.form-label(for='book') Book: 
+      select#book.form-select(
+        type='select'
+        placeholder='Select book'
+        name='book'
+      )
+        - book_list.sort(function(a, b) {let textA = a.title.toUpperCase(); let textB = b.title.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0})
+        for book in book_list 
+          if bookinstance 
+            option(
+              value=book._id 
+              selected=bookinstance.book._id.toString()==book._id.toString() ? 'selected' : false
+            ) #{book.title} 
+          else 
+            option(value=book._id) #{book.title} 
+
+    .mb-3 
+      label.form-label(for='imprint') Imprint: 
+      input#imprint.form-control(
+        type='text'
+        placeholder='Publisher and date information'
+        name='imprint'
+        value=(undefined===bookinstance ? '' : bookinstance.imprint) 
+      )
+    .mb-3 
+      label.form-label(for='due_back') Date when book availabel: 
+      input#due_back.form-control(
+        type='date'
+        placeholder='Publisher and date information'
+        name='due_back'
+        value=(undefined===bookinstance ? '' : bookinstance.due_back_yyyy_mm_dd) 
+      )
+
+    .mb-3 
+      label.form-label(for='status') Status: 
+      select#status.form-select(
+        type='select'
+        placeholder='Select status'
+        name='status'
+      )
+        - all_status = ['Maintenance', 'Available', 'Loaned', 'Reserved']
+        for status in all_status 
+          if bookinstance 
+            option(
+              value=status 
+              selected=(bookinstance.status===status ? true : false)
+            )= status
+          else 
+            option(value=status) #{status}
+
+    button.btn.btn-primary(type='submit') Submit 
+
+  if errors 
+    ul 
+      for error in errors 
+        li!= error.msg
